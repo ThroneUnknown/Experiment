@@ -68,8 +68,10 @@ class Gui:
                 self.console.print(7, 65+i-bar_size, "[ ] " + categories[i], DARKWHITE, BASE_BG)
                 self.console.print(8, 65+i-bar_size, catshorts[i], DARKWHITE, cat_colors[i])
             # Place buildings in the building bar at the bottom based on filter and highlight selected category
-            start = [selection_x+1, 65-bar_size]
-            dbs = [Building(key, buildings[key][3], buildings[key], [0,0], 0) for key in buildings.keys() if buildings[key][3] == categories[self.bs_filter-2]]
+            dbs = [Building(key, buildings[key][3], buildings[key], [0,0], 0) for key in buildings.keys() if buildings[key][3] == categories[self.bs_filter]]  # Display buildings
+            if self.bs_filter == 0:
+                dbs = [Building(key, buildings[key][3], buildings[key], [0,0], 0) for key in buildings.keys()]
+            
             self.console.print(11, 65-bar_size+self.bs_filter, categories[self.bs_filter], BRIGHTWHITE, BASE_BG)
             
             # Color background different over selected filter
@@ -81,6 +83,7 @@ class Gui:
                     fg_color = DARKWHITE
                 self.console.print(7, 65-bar_size+index, "[ ] " + categories[index] + hline(" ", selection_x-11 - len(categories[index])), fg_color, SELECTED)
                 self.console.print(8, 65-bar_size+index, catshorts[index], fg_color, cat_colors[index])
+            start = [selection_x+1, 65-bar_size]
             for b in dbs:  # Display each of the display buildings next to each other in the bar
                 b.display(start, self.console)
                 # self.console.print(start[0], start[1]-1, b.name, DARKWHITE, BASE_BG)
