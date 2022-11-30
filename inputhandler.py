@@ -13,21 +13,21 @@ class InputHandler:
             match event:
                 case tcod.event.Quit():
                     raise SystemExit()
+                # To be removed later, ends program
                 case tcod.event.KeyDown(sym=sym) if sym == tcod.event.K_q:
-                    # To be removed later, ends program
                     raise SystemExit()
+                # Toggles sector building screen
                 case tcod.event.KeyDown(sym=sym) if sym == tcod.event.K_1:
-                    # Toggles sector building screen
                     if self.engine.mode == 0:
                         self.engine.mode = 1
                     elif self.engine.mode == 1:
                         self.engine.mode = 0
+                # Returns to homescreen
                 case tcod.event.KeyDown(sym=sym) if sym == tcod.event.K_ESCAPE:
-                    # Returns to homescreen
                     self.engine.mode = 0
                     self.gui.bs_screen = 1
+                # Toggles building bar in building screen
                 case tcod.event.KeyDown(sym=sym) if sym == tcod.event.K_s:
-                    # Toggles building bar in building screen
                     if self.engine.mode == 1:
                         self.gui.bs_screen *= -1
                         
@@ -50,3 +50,4 @@ class InputHandler:
                     if self.engine.mode == 1:
                         self.gui.bs_filter = 3
 
+                # MOUSE ACTIONS
