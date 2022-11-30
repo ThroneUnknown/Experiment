@@ -9,6 +9,7 @@ class InputHandler:
 
     def handle(self):
         for event in tcod.event.wait():
+            self.engine.context.convert_event(event)
             match event:
                 case tcod.event.Quit():
                     raise SystemExit()
@@ -48,3 +49,4 @@ class InputHandler:
                     # Toggles entertainment filter in building screen
                     if self.engine.mode == 1:
                         self.gui.bs_filter = 3
+

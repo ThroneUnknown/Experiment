@@ -7,6 +7,7 @@ BASE_BG = (22,22,22)
 CANVAS_BG = (35,35,35)
 DARKWHITE = (220,220,220)
 BRIGHTWHITE = (255,255,255)
+SELECTED = (48,48,48)
 
 
 # A function returning a string of a given char for a given length.
@@ -22,8 +23,9 @@ class Gui:
         self.context = context
         self.locations = []
         self.sector_builder_window = Window([6,4], [110,60], self.console, decor=("╔═╗║ ║╚═╝"))
-        self.bs_screen = 1
+        self.bs_screen = 1  # bs stands for buildings screen
         self.bs_filter = 1  # 0 is all, after this each corresponds to the "categories" list
+        self.hover = "T"  # Mouse selected place
 
     def homepage(self):
         # Basic homescreen with color and orange bar
@@ -58,27 +60,32 @@ class Gui:
                 self.console.print(selection_x, 64-bar_size+i, "│", BASE_FG, BASE_BG)
 
             # List out all the categories of buildings on the left
-            catshorts = ["R", "T", "E"]
-            categories = ["Residential", "Retail", "Entertainment"]
-            cat_colors = [(104,0,0), (24,104,0), (0,18,134)]  # Respective color for each category of building
-            self.console.print(7, 64-bar_size, "[F] Filter All", DARKWHITE, BASE_BG)
+            catshorts = ["F", "R", "T", "E"]
+            categories = ["Filter All", "Residential", "Retail", "Entertainment"]
+            cat_colors = [BASE_BG, (104,0,0), (24,104,0), (0,18,134)]  # Respective color for each category of building
+            self.console.print(7, 65-bar_size, "[F] Filter All", DARKWHITE, BASE_BG)
             for i in range(len(categories)):
-                self.console.print(7, 66+i-bar_size, "[ ] " + categories[i], DARKWHITE, BASE_BG)
-                self.console.print(8, 66+i-bar_size, catshorts[i], DARKWHITE, cat_colors[i])
-
+                self.console.print(7, 65+i-bar_size, "[ ] " + categories[i], DARKWHITE, BASE_BG)
+                self.console.print(8, 65+i-bar_size, catshorts[i], DARKWHITE, cat_colors[i])
             # Place buildings in the building bar at the bottom based on filter and highlight selected category
             start = [selection_x+1, 65-bar_size]
-            if self.bs_filter == 0:
-                dbs = [Building(key, buildings[key][3], buildings[key], [0,0], 0) for key in buildings.keys()]
-                self.console.print(7, 64-bar_size, "[F] Filter All", BRIGHTWHITE, BASE_BG)
-            else:
-                dbs = [Building(key, buildings[key][3], buildings[key], [0,0], 0) for key in buildings.keys() if buildings[key][3] == categories[self.bs_filter-1]]
-                self.console.print(11, 66-bar_size+self.bs_filter-1, categories[self.bs_filter-1], BRIGHTWHITE, BASE_BG)
+            dbs = [Building(key, buildings[key][3], buildings[key], [0,0], 0) for key in buildings.keys() if buildings[key][3] == categories[self.bs_filter-2]]
+            self.console.print(11, 65-bar_size+self.bs_filter, categories[self.bs_filter], BRIGHTWHITE, BASE_BG)
             
+            # Color background different over selected filter
+            if self.hover in catshorts:
+                index = catshorts.index(self.hover)
+                if self.bs_filter == index:
+                    fg_color = BRIGHTWHITE
+                else:
+                    fg_color = DARKWHITE
+                self.console.print(7, 65-bar_size+index, "[ ] " + categories[index] + hline(" ", selection_x-11 - len(categories[index])), fg_color, SELECTED)
+                self.console.print(8, 65-bar_size+index, catshorts[index], fg_color, cat_colors[index])
             for b in dbs:  # Display each of the display buildings next to each other in the bar
                 b.display(start, self.console)
                 # self.console.print(start[0], start[1]-1, b.name, DARKWHITE, BASE_BG)
                 start[0] += len(b.entry[2][0][0]) + 5
+                
         else:
             self.console.print(90, 62, "[+]", DARKWHITE, BASE_BG)
             for i in range(54):  # Canvas screen
