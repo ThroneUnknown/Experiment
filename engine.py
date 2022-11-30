@@ -13,6 +13,7 @@ class Engine:
         self.inputhandler = InputHandler(gui, self)
         self.mode = 0
 
+    # The run all functions (input handling, gui, etc) necessary for the main game loop"
     def game_loop(self):
         console = self.console
         context = self.context

@@ -1,3 +1,0 @@
-Dimensions = 122 x 68
-Font = rose
-magnification = .785
