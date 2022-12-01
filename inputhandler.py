@@ -51,3 +51,5 @@ class InputHandler:
                         self.gui.bs_filter = 3
 
                 # MOUSE ACTIONS
+                case tcod.event.MouseMotion(pixel=pixel, pixel_motion=pixel_motion, tile=tile, tile_motion=tile_motion): 
+                    tile_coords = [tile.x, tile.y]

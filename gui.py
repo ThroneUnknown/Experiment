@@ -26,6 +26,7 @@ class Gui:
         self.bs_screen = 1  # bs stands for buildings screen
         self.bs_filter = 1  # 0 is all, after this each corresponds to the "categories" list
         self.hover = "T"  # Mouse selected place
+        self.selection = {}  # A dictionary where each key is a hover value (see above) and each value is a list of points that set such key
 
     def homepage(self):
         # Basic homescreen with color and orange bar
@@ -59,10 +60,12 @@ class Gui:
             for i in range(bar_size-1):
                 self.console.print(selection_x, 64-bar_size+i, "│", BASE_FG, BASE_BG)
 
-            # List out all the categories of buildings on the left
+            # General category information
             catshorts = ["F", "R", "T", "E"]
             categories = ["Filter All", "Residential", "Retail", "Entertainment"]
             cat_colors = [BASE_BG, (104,0,0), (24,104,0), (0,18,134)]  # Respective color for each category of building
+
+            # List out all categories correctly on the right
             self.console.print(7, 65-bar_size, "[F] Filter All", DARKWHITE, BASE_BG)
             for i in range(len(categories)):
                 self.console.print(7, 65+i-bar_size, "[ ] " + categories[i], DARKWHITE, BASE_BG)
