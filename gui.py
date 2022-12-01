@@ -5,7 +5,7 @@ from window import Window
 BASE_FG = (125,39,0)
 BASE_BG = (22,22,22)
 CANVAS_BG = (35,35,35)
-DARKWHITE = (220,220,220)
+DARKWHITE = (200,200,200)
 BRIGHTWHITE = (255,255,255)
 SELECTED = (48,48,48)
 
@@ -24,8 +24,9 @@ class Gui:
         self.locations = []
         self.sector_builder_window = Window([6,4], [110,60], self.console, decor=("╔═╗║ ║╚═╝"))
         self.bs_screen = 1  # bs stands for buildings screen
-        self.bs_filter = 1  # 0 is all, after this each corresponds to the "categories" list
-        self.hover = "T"  # Mouse selected place
+        self.bs_filter = "F"  # "" is for nothing, 
+        self.hover = ""  # Mouse selected place
+        self.select = ""
         self.selection = {}  # A dictionary where each key is a hover value (see above) and each value is a list of points that set such key
 
     def homepage(self):
@@ -45,11 +46,22 @@ class Gui:
         self.console.print(102, 5, "ALL SECTORS", BASE_FG, BASE_BG)
         self.console.print(42, 5, "──             ──", (150,150,150), BASE_BG)
         self.console.print(44, 5, "SECTOR EDITOR", BASE_FG, BASE_BG)
-
+        
+        # General category information
+        catshorts = ["F", "R", "T", "E"]
+        categories = ["Filter All", "Residential", "Retail", "Entertainment"]
+        cat_colors = [BASE_BG, (104,0,0), (24,104,0), (0,18,134)]  # Respective color for each category of building
+        
+        # MOUSE SELECTION
+        if self.select in catshorts:
+            self.bs_filter = self.select
+        elif self.select == "+" or self.select == "-":
+            self.bs_screen *= -1
+        self.select = ""
+        
         # Show or hide the building selection screen
         if self.bs_screen == 1:
             self.console.print(7, 63-bar_size, hline("─", 92), BASE_FG, BASE_BG)
-            self.console.print(90, 63-bar_size, "[-]", DARKWHITE, BASE_BG)
             self.console.print(selection_x+1, 63-bar_size, "Building Selection", DARKWHITE, BASE_BG)
             self.console.print(selection_x, 63-bar_size, "┬", BASE_FG, BASE_BG)  # Selection bar line
             for i in range(55-bar_size): # Canvas screen
@@ -60,27 +72,31 @@ class Gui:
             for i in range(bar_size-1):
                 self.console.print(selection_x, 64-bar_size+i, "│", BASE_FG, BASE_BG)
 
-            # General category information
-            catshorts = ["F", "R", "T", "E"]
-            categories = ["Filter All", "Residential", "Retail", "Entertainment"]
-            cat_colors = [BASE_BG, (104,0,0), (24,104,0), (0,18,134)]  # Respective color for each category of building
-
+            # Hovering of the [-] button
+            self.selection["-"] = [[90+x, 63-bar_size] for x in range(3)]
+            
+            # Print [-] button either normal or hovered
+            if self.hover == "-":
+                self.console.print(90, 63-bar_size, "[-]", DARKWHITE, SELECTED)
+            else:
+                self.console.print(90, 63-bar_size, "[-]", DARKWHITE, BASE_BG)
+            
             # List out all categories correctly on the right
             self.console.print(7, 65-bar_size, "[F] Filter All", DARKWHITE, BASE_BG)
             for i in range(len(categories)):
                 self.console.print(7, 65+i-bar_size, "[ ] " + categories[i], DARKWHITE, BASE_BG)
                 self.console.print(8, 65+i-bar_size, catshorts[i], DARKWHITE, cat_colors[i])
+                self.selection[catshorts[i]] = [[7+x, 65+i-bar_size] for x in range(selection_x-7)]
             # Place buildings in the building bar at the bottom based on filter and highlight selected category
-            dbs = [Building(key, buildings[key][3], buildings[key], [0,0], 0) for key in buildings.keys() if buildings[key][3] == categories[self.bs_filter]]  # Display buildings
-            if self.bs_filter == 0:
-                dbs = [Building(key, buildings[key][3], buildings[key], [0,0], 0) for key in buildings.keys()]
-            
-            self.console.print(11, 65-bar_size+self.bs_filter, categories[self.bs_filter], BRIGHTWHITE, BASE_BG)
+            dbs = [Building(key, buildings[key][3], buildings[key], [0,0], 0) for key in buildings.keys() if buildings[key][3] == categories[catshorts.index(self.bs_filter)]]  # Display buildings
+            if self.bs_filter == "F":
+                dbs = [Building(key, buildings[key][3], buildings[key], [0,0], 0) for key in buildings.keys()]  # Display buildings
+            self.console.print(11, 65-bar_size+catshorts.index(self.bs_filter), categories[catshorts.index(self.bs_filter)], BRIGHTWHITE, BASE_BG)
             
             # Color background different over selected filter
             if self.hover in catshorts:
                 index = catshorts.index(self.hover)
-                if self.bs_filter == index:
+                if self.bs_filter == self.hover:
                     fg_color = BRIGHTWHITE
                 else:
                     fg_color = DARKWHITE
@@ -96,4 +112,13 @@ class Gui:
             self.console.print(90, 62, "[+]", DARKWHITE, BASE_BG)
             for i in range(54):  # Canvas screen
                 self.console.print(8, 7+i, hline(" ", 90), BASE_FG, CANVAS_BG)
+                
+            # Hovering of the [+] button
+            self.selection["+"] = [[90+x, 62] for x in range(3)]
+            
+            # Print [+] button either normal or hovered
+            if self.hover == "+":
+                self.console.print(90, 62, "[+]", DARKWHITE, SELECTED)
+            else:
+                self.console.print(90, 62, "[+]", DARKWHITE, BASE_BG)
 
