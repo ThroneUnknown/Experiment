@@ -28,6 +28,6 @@ class Engine:
                 self.gui.homepage()
                 self.gui.bs_screen = 1
             elif self.mode == 1:
-                self.gui.sector_builder()
+                self.gui.sector_builder(self)
             context.present(console)
             

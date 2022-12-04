@@ -15,6 +15,15 @@ def hline(char, length):
     return "".join([char for x in range(length)])
 
 
+# A function that returns a list of all points in an area
+def point_area(start, dimensions):
+    all_points = []
+    for y in range(dimensions[1]):  # Y coordinate
+        for x in range(dimensions[0]):  # X coordinate
+            all_points.append([start[0]+x, start[1]+y])
+    return all_points
+
+
 # Graphical user interface function that produces all graphics used in the game
 class Gui:
     
@@ -36,16 +45,30 @@ class Gui:
             self.console.print(25, i, "│", BASE_FG, BASE_BG)
 
     # Build a sector using a new window
-    def sector_builder(self):
+    def sector_builder(self, engine):
         # Set up a window to be displayed when editing/building a sector
         bar_size = 15  # Height of the bar in which buildings are selected
         selection_x = 25  # X value of selection of building genre bar
         self.sector_builder_window.display()
+
+        # General titles across the page
         for i in range(58):
             self.console.print(99, i+5, "│", BASE_FG, BASE_BG)
-        self.console.print(102, 5, "ALL SECTORS", BASE_FG, BASE_BG)
+        self.console.print(101, 5, "ALL SECTORS", BASE_FG, BASE_BG)
         self.console.print(42, 5, "──             ──", (150,150,150), BASE_BG)
         self.console.print(44, 5, "SECTOR EDITOR", BASE_FG, BASE_BG)
+
+        # X button to close window
+        self.selection["x"] = point_area([113, 4], [3, 3])
+        self.console.print(113, 4, "╤═╗", BASE_FG, BASE_BG)
+        self.console.print(113, 5, "│ ║", BASE_FG, BASE_BG)
+        self.console.print(113, 6, "└─╢", BASE_FG, BASE_BG)
+
+        # Hovering x button
+        if self.hover == "x":
+            self.console.print(114, 5, "x", BRIGHTWHITE, SELECTED)
+        else:
+            self.console.print(114, 5, "x", DARKWHITE, BASE_BG)
         
         # General category information
         catshorts = ["F", "R", "T", "E"]
@@ -57,6 +80,9 @@ class Gui:
             self.bs_filter = self.select
         elif self.select == "+" or self.select == "-":
             self.bs_screen *= -1
+        elif self.select == "x":
+            self.bs_screen = 1
+            engine.mode = 0
         self.select = ""
         
         # Show or hide the building selection screen
@@ -73,7 +99,7 @@ class Gui:
                 self.console.print(selection_x, 64-bar_size+i, "│", BASE_FG, BASE_BG)
 
             # Hovering of the [-] button
-            self.selection["-"] = [[90+x, 63-bar_size] for x in range(3)]
+            self.selection["-"] = point_area([90,63-bar_size], [3,1])
             
             # Print [-] button either normal or hovered
             if self.hover == "-":
@@ -87,6 +113,8 @@ class Gui:
                 self.console.print(7, 65+i-bar_size, "[ ] " + categories[i], DARKWHITE, BASE_BG)
                 self.console.print(8, 65+i-bar_size, catshorts[i], DARKWHITE, cat_colors[i])
                 self.selection[catshorts[i]] = [[7+x, 65+i-bar_size] for x in range(selection_x-7)]
+                self.selection[catshorts[i]] = point_area([7,65+i-bar_size], [selection_x-7,1])
+            
             # Place buildings in the building bar at the bottom based on filter and highlight selected category
             dbs = [Building(key, buildings[key][3], buildings[key], [0,0], 0) for key in buildings.keys() if buildings[key][3] == categories[catshorts.index(self.bs_filter)]]  # Display buildings
             if self.bs_filter == "F":
@@ -108,13 +136,13 @@ class Gui:
                 # self.console.print(start[0], start[1]-1, b.name, DARKWHITE, BASE_BG)
                 start[0] += len(b.entry[2][0][0]) + 5
                 
-        else:
+        else:  # If the building bar is minimized this shows
             self.console.print(90, 62, "[+]", DARKWHITE, BASE_BG)
             for i in range(54):  # Canvas screen
                 self.console.print(8, 7+i, hline(" ", 90), BASE_FG, CANVAS_BG)
                 
             # Hovering of the [+] button
-            self.selection["+"] = [[90+x, 62] for x in range(3)]
+            self.selection["+"] = point_area([90,62], [3,1])
             
             # Print [+] button either normal or hovered
             if self.hover == "+":
