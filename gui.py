@@ -120,6 +120,7 @@ class Gui:
             if self.bs_filter == "F":
                 dbs = [Building(key, buildings[key][3], buildings[key], [0,0], 0) for key in buildings.keys()]  # Display buildings
             self.console.print(11, 65-bar_size+catshorts.index(self.bs_filter), categories[catshorts.index(self.bs_filter)], BRIGHTWHITE, BASE_BG)
+            self.console.print(8, 65-bar_size+catshorts.index(self.bs_filter), self.bs_filter, BRIGHTWHITE, cat_colors[catshorts.index(self.bs_filter)])
             
             # Color background different over selected filter
             if self.hover in catshorts:
